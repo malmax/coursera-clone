@@ -1,0 +1,86 @@
+{
+  "name": "coursera-clone-api",
+  "version": "0.0.1",
+  "description": "API for Coursera clone pet project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon -e js,mjs,jsx --ignore lib/ --exec 'npm run build && npm start'",
+    "start": "node lib/index.js",
+    "build": "flow-remove-types src/ -d lib/",
+    "lint:flow": "flow"
+  },
+  "prettier": {
+    "trailingComma": true,
+    "singleQuote": true,
+    "bracketSpacing": true
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": [
+      "airbnb-base",
+      "prettier",
+      "plugin:flowtype/recommended"
+    ],
+    "plugins": [
+      "flowtype",
+      "import"
+    ],
+    "rules": {
+      "flowtype/require-valid-file-annotation": 2,
+      "import/extensions": [
+        2,
+        {
+          "js": "never",
+          "mjs": "never"
+        }
+      ]
+    },
+    "env": {
+      "node": true
+    },
+    "settings": {
+      "import/extensions": [
+        ".mjs",
+        ".js"
+      ],
+      "import/resolver": {
+        "node": {
+          "extensions": [
+            ".mjs",
+            ".js"
+          ]
+        }
+      },
+      "flowtype": {
+        "onlyFilesWithFlowAnnotation": false
+      }
+    }
+  },
+  "author": "Malakhov M",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-eslint": "^8.0.2",
+    "eslint": "^4.10.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-prettier": "^2.7.0",
+    "eslint-plugin-flowtype": "^2.39.1",
+    "eslint-plugin-import": "^2.8.0",
+    "flow-remove-types": "^1.2.3",
+    "nodemon": "^1.12.1",
+    "prettier": "^1.8.2"
+  },
+  "dependencies": {
+    "@std/esm": "^0.13.0",
+    "apollo-server-koa": "^1.2.0",
+    "bluebird": "^3.5.1",
+    "flow-bin": "^0.59.0",
+    "graphql": "^0.11.7",
+    "knex": "^0.14.0",
+    "koa": "^2.4.1",
+    "koa-bodyparser": "^4.2.0",
+    "koa-router": "^7.2.1",
+    "rc": "^1.2.2",
+    "sqlite3": "^3.1.13"
+  }
+}
