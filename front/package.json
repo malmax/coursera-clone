@@ -6,13 +6,16 @@
     "apollo-cache-inmemory": "^1.1.0",
     "apollo-client": "^2.0.2",
     "apollo-link-http": "^1.1.0",
+    "flow-bin": "^0.59.0",
     "graphql": "^0.11.7",
     "graphql-tag": "^2.5.0",
     "react": "^16.1.1",
     "react-apollo": "^2.0.1",
     "react-dom": "^16.1.1",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.0.17"
+    "react-scripts": "1.0.17",
+    "semantic-ui-react": "^0.76.0",
+    "styled-components": "^2.2.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -55,6 +58,7 @@
     "eslint-config-prettier": "^2.7.0",
     "eslint-plugin-flowtype": "^2.39.1",
     "eslint-plugin-import": "^2.8.0",
-    "prettier": "^1.8.2"
+    "prettier": "^1.8.2",
+    "semantic-ui": "^2.2.13"
   }
 }
