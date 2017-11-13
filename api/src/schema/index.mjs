@@ -6,6 +6,8 @@ import userSchema from './user/userSchema';
 import userResolver from './user/userResolver';
 import courseSchema from './course/courseSchema';
 import courseResolver from './course/courseResolver';
+import courseModuleSchema from './course/courseModuleSchema';
+import courseModuleResolver from './course/courseModuleResolver';
 
 const logger = { log: e => console.log(e) };
 
@@ -18,14 +20,14 @@ const resolvers: any = {
 };
 
 // merge schemas
-[userSchema, courseSchema].forEach(sch => {
+[userSchema, courseSchema, courseModuleSchema].forEach(sch => {
   const { typeDefs: sTypeDefs, query: sQuery, mutation: sMutation } = sch();
   sTypeDefs.forEach(line => typeDefs.push(line));
   sQuery.forEach(line => query.push(line));
   sMutation.forEach(line => mutation.push(line));
 });
 // merge resolvers
-[userResolver, courseResolver].forEach(res => {
+[userResolver, courseResolver, courseModuleResolver].forEach(res => {
   const { Query, Mutation, Default } = res();
   Object.assign(resolvers.Query, Query);
   Object.assign(resolvers.Mutation, Mutation);

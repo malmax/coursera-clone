@@ -1,5 +1,4 @@
 // @flow
-import config from '../../config';
 
 export default () => {
   type CourseSchema = {
@@ -18,6 +17,7 @@ export default () => {
         courseId: Int!
         name: String!
         description: String
+        modules: [CourseModule!]
         createdAt: String
         updatedAt: String
       }`,

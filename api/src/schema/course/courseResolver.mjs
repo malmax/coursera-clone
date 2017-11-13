@@ -7,7 +7,17 @@ import omit from 'lodash/omit';
 import { checkAuth } from '../../utils/auth';
 
 export default () => ({
-  Default: {},
+  Default: {
+    Course: {
+      modules: ({ courseId }, a, { knex }) => knex
+          .select()
+          .from('course_modules')
+          .where('course_id', courseId)
+          .then(resultArr =>
+            resultArr.map(el => mapKeys(el, (v, k) => camelCase(k)))
+          ),
+    },
+  },
   Query: {
     courseGetAll: (p, a, { knex }) =>
       knex
@@ -20,8 +30,8 @@ export default () => ({
     courseGet: (p, { courseId }, { knex }) =>
       knex
         .select()
-        .from('users')
-        .where('user_id', parseInt(courseId, 10))
+        .from('courses')
+        .where('course_id', parseInt(courseId, 10))
         .limit(1)
         .then(result => mapKeys(result[0], (v, k) => camelCase(k))),
   },
