@@ -8,6 +8,8 @@ import courseSchema from './course/courseSchema';
 import courseResolver from './course/courseResolver';
 import courseModuleSchema from './course/courseModuleSchema';
 import courseModuleResolver from './course/courseModuleResolver';
+import paymentSchema from './payment/paymentSchema';
+import paymentResolver from './payment/paymentResolver';
 
 const logger = { log: e => console.log(e) };
 
@@ -20,19 +22,21 @@ const resolvers: any = {
 };
 
 // merge schemas
-[userSchema, courseSchema, courseModuleSchema].forEach(sch => {
+[userSchema, courseSchema, courseModuleSchema, paymentSchema].forEach(sch => {
   const { typeDefs: sTypeDefs, query: sQuery, mutation: sMutation } = sch();
   sTypeDefs.forEach(line => typeDefs.push(line));
   sQuery.forEach(line => query.push(line));
   sMutation.forEach(line => mutation.push(line));
 });
 // merge resolvers
-[userResolver, courseResolver, courseModuleResolver].forEach(res => {
-  const { Query, Mutation, Default } = res();
-  Object.assign(resolvers.Query, Query);
-  Object.assign(resolvers.Mutation, Mutation);
-  Object.assign(resolvers, Default);
-});
+[userResolver, courseResolver, courseModuleResolver, paymentResolver].forEach(
+  res => {
+    const { Query, Mutation, Default } = res();
+    Object.assign(resolvers.Query, Query);
+    Object.assign(resolvers.Mutation, Mutation);
+    Object.assign(resolvers, Default);
+  }
+);
 
 export default GraphQlTools.makeExecutableSchema({
   typeDefs: [

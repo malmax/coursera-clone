@@ -1,0 +1,60 @@
+{
+  "name": "front",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "apollo-cache-inmemory": "^1.1.0",
+    "apollo-client": "^2.0.2",
+    "apollo-link-http": "^1.1.0",
+    "graphql": "^0.11.7",
+    "graphql-tag": "^2.5.0",
+    "react": "^16.1.1",
+    "react-apollo": "^2.0.1",
+    "react-dom": "^16.1.1",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.0.17"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "prettier": {
+    "trailingComma": true,
+    "singleQuote": true,
+    "bracketSpacing": true
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": [
+      "airbnb",
+      "prettier",
+      "plugin:flowtype/recommended"
+    ],
+    "plugins": [
+      "flowtype",
+      "import"
+    ],
+    "rules": {
+      "flowtype/require-valid-file-annotation": 2
+    },
+    "env": {
+      "node": false
+    },
+    "settings": {
+      "flowtype": {
+        "onlyFilesWithFlowAnnotation": false
+      }
+    }
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.0.2",
+    "eslint": "^4.11.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-prettier": "^2.7.0",
+    "eslint-plugin-flowtype": "^2.39.1",
+    "eslint-plugin-import": "^2.8.0",
+    "prettier": "^1.8.2"
+  }
+}
