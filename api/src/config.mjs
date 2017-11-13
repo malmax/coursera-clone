@@ -4,6 +4,10 @@ import rc from 'rc';
 const APPNAME: string = 'API';
 
 const config = {
+  auth: {
+    dev: true,
+    SECRET: 'dfgfgnkdngkqn4fnkqnlfdnkc ak amlkwPQjo2h&4gqhnrbshn',
+  },
   user: {
     roles: ['admin', 'teacher', 'client'],
   },

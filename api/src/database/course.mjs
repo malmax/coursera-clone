@@ -5,9 +5,10 @@ import config, { type configType } from '../config';
 type KnexType = any;
 
 const knex: KnexType = Knex(config.db);
-const tableName: string = 'course';
+const tableName: string = 'courses';
 
-export default () => knex.schema.hasTable(tableName).then((exists: Boolean): Promise<any> => {
+export default () =>
+  knex.schema.hasTable(tableName).then((exists: Boolean): Promise<any> => {
     if (exists) return Promise.resolve(`${tableName} exists`);
 
     return knex.schema

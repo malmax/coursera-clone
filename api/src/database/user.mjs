@@ -5,9 +5,10 @@ import config, { type configType } from '../config';
 type KnexType = any;
 
 const knex: KnexType = Knex(config.db);
-const tableName: string = 'user';
+const tableName: string = 'users';
 
-export default () => knex.schema.hasTable(tableName).then((exists: Boolean): Promise<any> => {
+export default () =>
+  knex.schema.hasTable(tableName).then((exists: Boolean): Promise<any> => {
     if (exists) return Promise.resolve(`${tableName} exists`);
 
     return knex.schema
@@ -39,10 +40,20 @@ export type UserType = {
   user_id: number,
   email: string,
   password: string,
-  name: string,
-  timezone: number,
-  region: number,
+  name: ?string,
+  timezone: ?number,
   role: string,
-  created_at: string,
-  updated_at: string,
+  created_at: ?string,
+  updated_at: ?string,
+};
+
+export type UserTypeCamel = {
+  userId: number,
+  email: string,
+  password: string,
+  name: ?string,
+  timezone: ?number,
+  role: string,
+  createdAt: ?string,
+  updatedAt: ?string,
 };
