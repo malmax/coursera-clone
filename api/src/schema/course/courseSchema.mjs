@@ -18,6 +18,8 @@ export default () => {
         name: String!
         description: String
         modules: [CourseModule!]
+        teacher: User
+        startAt: String
         createdAt: String
         updatedAt: String
       }`,

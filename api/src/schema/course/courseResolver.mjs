@@ -9,13 +9,20 @@ import { checkAuth } from '../../utils/auth';
 export default () => ({
   Default: {
     Course: {
-      modules: ({ courseId }, a, { knex }) => knex
+      modules: ({ courseId }, a, { knex }) =>
+        knex
           .select()
           .from('course_modules')
           .where('course_id', courseId)
           .then(resultArr =>
             resultArr.map(el => mapKeys(el, (v, k) => camelCase(k)))
           ),
+      teacher: ({ teacher }, a, { knex }) =>
+        knex
+          .select()
+          .from('users')
+          .where('user_id', teacher)
+          .then(result => mapKeys(result[0], (v, k) => camelCase(k))),
     },
   },
   Query: {

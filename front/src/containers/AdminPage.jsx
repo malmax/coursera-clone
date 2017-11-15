@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Label, Menu, Grid } from 'semantic-ui-react';
-import { RouteWithSubRoutes } from '../Routes';
 
 const AdminPage = props => {
   const path = props.location.pathname;
@@ -33,9 +32,7 @@ const AdminPage = props => {
           </Menu>
         </Grid.Column>
         <Grid.Column width={12} stretched>
-          {props.routes.map((route, i) => (
-            <RouteWithSubRoutes key={`${route.path}-key`} {...route} />
-          ))}
+          {props.children}
         </Grid.Column>
       </Grid.Row>
     </Grid>

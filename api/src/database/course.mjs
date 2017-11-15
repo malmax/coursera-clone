@@ -19,7 +19,11 @@ export default () =>
 
         table.string('name').unique();
         table.string('description');
-        table.integer('teacher').references('user.user_id');
+        table.date('start_at');
+        table
+          .integer('teacher')
+          .references('user.user_id')
+          .defaultTo(1);
 
         table.timestamps(true, true);
       })

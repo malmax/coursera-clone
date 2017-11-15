@@ -4,10 +4,11 @@ import { ApolloProvider } from 'react-apollo';
 import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-// import './index.css';
 import registerServiceWorker from './registerServiceWorker';
-import Routes from './Routes';
+import AdminLayout from './routes/AdminLayout';
+import ClientLayout from './routes/ClientLayout';
 import './css/semantic.min.css';
 
 const client = new ApolloClient({
@@ -17,7 +18,13 @@ const client = new ApolloClient({
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <Routes />
+    <BrowserRouter>
+      <Switch>
+        <Route path="/admin" component={AdminLayout} />
+        <Route path="/" component={ClientLayout} />
+        <Route path="*" render={() => <div>Page Not Found</div>} />
+      </Switch>
+    </BrowserRouter>
   </ApolloProvider>,
   document.getElementById('root')
 );

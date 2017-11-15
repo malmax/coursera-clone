@@ -28,10 +28,10 @@ export default () =>
 
         table.integer('price');
         table.date('start_date');
-        table.date('end_date');
-        table.date('pay_until');
+        table.int('weeks');
+        // table.date('pay_until');
 
-        table.integer('teacher').references('user.user_id');
+        // table.integer('teacher').references('user.user_id');
 
         table.timestamps(true, true);
       })

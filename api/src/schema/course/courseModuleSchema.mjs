@@ -18,11 +18,11 @@ export default () => {
         courseId: Int!
         name: String!
         description: String
+        # in dollars
         price: Int
         startDate: String
-        endDate: String
-        payUntil: String
-        teacher: Int
+        # length in weeks
+        weeks: Int
         createdAt: String
         updatedAt: String
       }`,
