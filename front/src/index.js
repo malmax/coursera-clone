@@ -5,7 +5,9 @@ import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { Provider } from 'react-redux';
 
+import store from './redux/store';
 import registerServiceWorker from './registerServiceWorker';
 import AdminLayout from './routes/AdminLayout';
 import ClientLayout from './routes/ClientLayout';
@@ -18,13 +20,15 @@ const client = new ApolloClient({
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <BrowserRouter>
-      <Switch>
-        <Route path="/admin" component={AdminLayout} />
-        <Route path="/" component={ClientLayout} />
-        <Route path="*" render={() => <div>Page Not Found</div>} />
-      </Switch>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/admin" component={AdminLayout} />
+          <Route path="/" component={ClientLayout} />
+          <Route path="*" render={() => <div>Page Not Found</div>} />
+        </Switch>
+      </BrowserRouter>
+    </Provider>
   </ApolloProvider>,
   document.getElementById('root')
 );

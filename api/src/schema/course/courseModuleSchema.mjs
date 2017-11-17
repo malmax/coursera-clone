@@ -16,6 +16,7 @@ export default () => {
     `type CourseModule {
         courseModuleId: Int!
         courseId: Int!
+        Course: Course
         name: String!
         description: String
         # in dollars

@@ -1,7 +1,8 @@
 // @flow
 import * as React from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { Menu } from 'semantic-ui-react';
+import { Menu, Input } from 'semantic-ui-react';
+import { connect } from 'react-redux';
 
 const menuItems = [
   {
@@ -35,8 +36,29 @@ const MainMenu = props => {
           active={path === m.path}
         />
       ))}
+      <Menu.Menu position="right">
+        <Menu.Item>
+          <Input
+            action={{
+              color: 'teal',
+              labelPosition: 'left',
+              icon: 'cart',
+              content: 'Checkout',
+            }}
+            actionPosition="left"
+            //  defaultValue='52.03'
+            value={`${props.store.cartItems.length} курс(а) на $${
+              props.store.cartAmount
+            }`}
+          />
+        </Menu.Item>
+      </Menu.Menu>
     </Menu>
   );
 };
 
-export default withRouter(MainMenu);
+const mapStateToProps = (state, ownProps) => ({
+  store: state.shopReducer || {},
+});
+
+export default withRouter(connect(mapStateToProps)(MainMenu));

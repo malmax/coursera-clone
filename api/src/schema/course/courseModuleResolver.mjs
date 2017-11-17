@@ -7,7 +7,17 @@ import omit from 'lodash/omit';
 import { checkAuth } from '../../utils/auth';
 
 export default () => ({
-  Default: {},
+  Default: {
+    CourseModule: {
+      Course: (parent, args, { knex }) =>
+        knex
+          .select()
+          .from('courses')
+          .where('course_id', parent.courseId)
+          .limit(1)
+          .then(r => mapKeys(r[0], (v, k) => camelCase(k))),
+    },
+  },
   Query: {
     courseGetModules: (p, { courseId }, { knex }) =>
       knex
