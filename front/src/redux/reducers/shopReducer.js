@@ -38,9 +38,10 @@ function shopReducer(
         state.cartItems.indexOf(action.payload.id) !== -1 &&
         action.payload.id
       ) {
+        const cartAmount = state.cartAmount - (action.payload.amount || 0);
         return Object.assign({}, state, {
           cartItems: state.cartItems.filter(r => r !== action.payload.id),
-          cartAmount: state.cartAmount - (action.payload.amount || 0),
+          cartAmount: cartAmount > 0 ? cartAmount : 0,
         });
       }
       break;

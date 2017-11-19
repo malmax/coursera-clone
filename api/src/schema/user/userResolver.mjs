@@ -5,7 +5,8 @@ import snakeCase from 'lodash/snakeCase';
 import omit from 'lodash/omit';
 
 import { checkAuthOrOwner, hashPassword, checkAuth } from '../../utils/auth';
-import { normalizeUser } from '../../utils/user';
+import { normalizeUser, normalizeEmail } from '../../utils/user';
+import { sendEmail } from '../../utils/email';
 
 export default () => ({
   Default: {},
@@ -145,5 +146,41 @@ export default () => ({
         success: id,
       };
     }),
+    userFindOrCreate: (p, args, { knex }) => {
+      const name: string | void = args.name ? args.name.trim() : undefined;
+      const email: string | void = normalizeEmail(args.email);
+
+      if (!email) {
+        throw new Error('Incorrect email');
+      }
+      return knex
+        .select()
+        .from('users')
+        .where('email', email)
+        .limit(1)
+        .then(result => {
+          if (result.length) {
+            return mapKeys(result[0], (v, k) => camelCase(k));
+          }
+
+          const password = Math.round(Math.random() * 100000).toString();
+
+          return knex('users')
+            .insert({
+              email,
+              name,
+              password: hashPassword(password),
+            })
+            .returning('user_id')
+            .then(u => {
+              sendEmail('registration', { email, name, password });
+              return {
+                email,
+                name,
+                userId: u[0],
+              };
+            });
+        });
+    },
   },
 });

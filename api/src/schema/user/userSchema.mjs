@@ -45,6 +45,7 @@ export default () => {
       timezone: Int,
       role: RoleType!):
     MutationAnswer!`,
+    `userFindOrCreate(email: String!, name: String): User!`,
     `userChangePassword(userId: Int!, 
       newPassword: String!, 
       oldPassword: String!): 

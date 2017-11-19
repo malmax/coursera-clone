@@ -1,0 +1,4 @@
+POST https://api.fondy.eu/api/checkout/url/ HTTP/1.1
+content-type: application/json
+
+{"request":{"order_id":"2-123","order_desc":"curses","currency":"USD","amount":650,"merchant_id":1404610,"signature":"66e5037ec515c18ee1206594e53ac6da7a4d303e"}}

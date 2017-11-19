@@ -5,7 +5,7 @@ import config, { type configType } from '../config';
 type KnexType = any;
 
 const knex: KnexType = Knex(config.db);
-const tableName: string = 'payments';
+const tableName: string = 'orders';
 
 export default () =>
   knex.schema.hasTable(tableName).then((exists: Boolean): Promise<any> => {
@@ -25,7 +25,11 @@ export default () =>
           .index()
           .notNullable()
           .references('user.user_id');
-
+        table.unique(['course_module_id', 'user_id']);
+        table
+          .boolean('paid')
+          .notNullable()
+          .defaultTo(false);
         table.enu('type', config.payment.types).notNullable();
         table.string('comment');
         table.integer('amount');
@@ -41,6 +45,7 @@ export type PaymentType = {
   type: string,
   comment: string,
   amount: number,
+  paid: boolean,
   created_at: string,
   updated_at: string,
 };

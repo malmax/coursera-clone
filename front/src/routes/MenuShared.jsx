@@ -24,6 +24,7 @@ const menuItems = [
 
 const MainMenu = props => {
   const path = props.location.pathname;
+
   return (
     <Menu pointing secondary>
       {menuItems.map(m => (
@@ -43,7 +44,8 @@ const MainMenu = props => {
               color: 'teal',
               labelPosition: 'left',
               icon: 'cart',
-              content: 'Checkout',
+              content: 'Оплатить',
+              onClick: () => props.history.push('/checkout'),
             }}
             actionPosition="left"
             //  defaultValue='52.03'

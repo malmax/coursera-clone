@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { Container, Divider } from 'semantic-ui-react';
+import { Container, Divider, Message } from 'semantic-ui-react';
 
 import LoginPage from '../containers/LoginPage';
 import HomePage from '../containers/HomePage';
@@ -21,7 +21,19 @@ const routes = [
   },
   {
     path: '/checkout',
+    exact: true,
     component: CheckoutPage,
+  },
+  {
+    path: '/checkout/success',
+    component: () => (
+      <Message positive>
+        <Message.Header>
+          Поздравляем, Вы удачно отправили заявку на курсы!
+        </Message.Header>
+        <p>Ожидайте письмо с ссылкой на оплату.</p>
+      </Message>
+    ),
   },
 ];
 
