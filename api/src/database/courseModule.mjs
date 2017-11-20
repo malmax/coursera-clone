@@ -19,7 +19,7 @@ export default () =>
 
         table
           .integer('course_id')
-          .references('course.course_id')
+          .references('courses.course_id')
           .notNullable()
           .index();
 

@@ -26,7 +26,7 @@ export default () => {
   transactionSchema.query = [];
 
   transactionSchema.mutation = [
-    `transactionCreate(userId: Int!): Transaction`,
+    `transactionCreate(userId: Int!): String`,
     `transactionPayLink(userId: Int!): String`,
   ];
 

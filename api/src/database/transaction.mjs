@@ -20,7 +20,7 @@ export default () =>
           .integer('user_id')
           .index()
           .notNullable()
-          .references('user.user_id');
+          .references('users.user_id');
         table
           .boolean('paid')
           .notNullable()

@@ -15,6 +15,7 @@ export type configType = {
     merchant_id: number,
     merchantPassword: string,
     types: Array<string>,
+    fondyUrl: string,
   },
   db: {
     client: string,
@@ -36,6 +37,7 @@ const config: configType = {
     types: ['cash', 'card'],
     merchant_id: 1404610,
     merchantPassword: 'o0tfxeCvIohwYDvE4KQwJ9RsqKDoneAQ',
+    fondyUrl: 'https://api.fondy.eu/api/checkout/url/',
   },
   db: {
     client: 'sqlite3',

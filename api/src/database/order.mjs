@@ -15,16 +15,16 @@ export default () =>
       .createTable(tableName, table => {
         console.log(`Creating ${tableName} in `, table.client.config.client);
 
+        table.increments('order_id');
         table
           .integer('course_module_id')
-          .primary()
           .notNullable()
-          .references('course_module.course_module_id');
+          .references('course_modules.course_module_id');
         table
           .integer('user_id')
           .index()
           .notNullable()
-          .references('user.user_id');
+          .references('users.user_id');
         table.unique(['course_module_id', 'user_id']);
         table
           .boolean('paid')

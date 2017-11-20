@@ -6,26 +6,20 @@ import MenuShared from './MenuShared';
 
 const routes = [
   {
-    path: '/admin/courses',
+    path: '/admin',
     name: 'Курсы',
     label: 5,
     component: () => <div>Страница курсов</div>,
   },
   {
-    path: '/admin/courses/pay',
-    name: '- оплаченные',
+    path: '/admin/courses/add',
+    name: '- отправить инвойсы',
     component: () => <div>Страница курсов</div>,
   },
   {
-    path: '/admin/courses/unpay',
-    name: '- не оплаченные',
+    path: '/admin/courses/payments',
+    name: '- студенты',
     component: () => <div>Страница курсов</div>,
-  },
-
-  {
-    path: '/admin/send-invoices',
-    name: 'Отправить счета',
-    component: () => <div>Страница рассылки инвойсов</div>,
   },
 ];
 

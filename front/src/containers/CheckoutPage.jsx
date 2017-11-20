@@ -27,7 +27,7 @@ class CheckoutPage extends React.Component {
 
   handleSubmit = async () => {
     try {
-      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (!this.state.email || !re.test(this.state.email)) {
         throw new Error('Необходимо ввести корректный email');
       }
@@ -57,26 +57,27 @@ class CheckoutPage extends React.Component {
       if (!flagOrdersCreate) {
         throw new Error('Произошла ошибка при размещении заказа');
       }
+      console.log(flagOrdersCreate);
 
       const resultTransaction = await this.props.transactionCreate({
         variables: { userId },
       });
 
-      const { data: { transactionCreate: transactionId } } = resultTransaction;
-      if (!transactionId) {
+      const { data: { transactionCreate: redirectUrl } } = resultTransaction;
+      if (!redirectUrl || redirectUrl.length < 10) {
         throw new Error('Произошла ошибка при формировании платежа');
       }
 
-      console.log(flagOrdersCreate);
+      window.location = redirectUrl;
 
-      // this.setState({ email: '', name: '' });
-      // this.props.items.forEach(el =>
-      //   this.props.removeFromCartHandler({
-      //     id: el.courseModuleId,
-      //     amount: el.price,
-      //   })
-      // );
-      // this.props.history.push('/checkout/success');
+      this.setState({ email: '', name: '' });
+      this.props.items.forEach(el =>
+        this.props.removeFromCartHandler({
+          id: el.courseModuleId,
+          amount: el.price,
+        })
+      );
+      // this.props.history.push(redirectUrl);
     } catch (e) {
       this.setState({ error: e.message });
     }
