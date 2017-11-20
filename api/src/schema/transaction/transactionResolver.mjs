@@ -43,6 +43,7 @@ export default () => ({
             comment: orderDesc,
             amount,
             paid: false,
+            pay_until: knex.raw('date("now","+5 day")'),
           });
           return Promise.all([
             id,

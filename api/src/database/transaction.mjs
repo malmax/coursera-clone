@@ -25,6 +25,7 @@ export default () =>
           .boolean('paid')
           .notNullable()
           .defaultTo(false);
+        table.date('pay_until');
         table.string('comment');
         table.integer('amount');
 

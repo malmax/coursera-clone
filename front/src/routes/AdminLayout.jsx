@@ -3,13 +3,15 @@ import * as React from 'react';
 import { Label, Menu, Grid } from 'semantic-ui-react';
 import { Route, Switch, Link } from 'react-router-dom';
 import MenuShared from './MenuShared';
+import HomePage from '../containers/HomePage';
 
 const routes = [
   {
     path: '/admin',
     name: 'Курсы',
+    exact: true,
     label: 5,
-    component: () => <div>Страница курсов</div>,
+    component: () => <HomePage />,
   },
   {
     path: '/admin/courses/add',

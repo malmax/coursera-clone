@@ -27,9 +27,13 @@ export default () => {
     `enum PaymentType {
         ${config.payment.types.join('\n')}        
         }`,
+    `type StudentModule {
+        email: String!
+        modules: [CourseModule!]
+    }`,
   ];
 
-  orderSchema.query = [];
+  orderSchema.query = [`orderGetStudentModules: [StudentModule!]`];
 
   orderSchema.mutation = [
     `ordersBulkCreate(userId: Int!, moduleIds:[Int!]!): Boolean`,

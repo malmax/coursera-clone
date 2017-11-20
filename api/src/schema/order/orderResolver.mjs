@@ -1,9 +1,67 @@
 // @flow
+import axios from 'axios';
+import config from '../../config';
 import { checkAuth } from '../../utils/auth';
+import { createPaymentSignature } from '../../utils/payment';
 
 export default () => ({
   Default: {},
-  Query: {},
+  Query: {
+    orderGetStudentModules: (p, args, { knex }) => {
+      const del = knex
+        .select()
+        .from('transactions')
+        .where('paid', false)
+        .where('pay_until', '<', knex.raw('date("now")'))
+        .del()
+        .then(() =>
+          knex
+            .select()
+            .from('transactions')
+            .where('paid', false)
+            .where('pay_until', '>=', knex.raw('date("now")'))
+        )
+        .then(gets => {
+          const requests = gets.map(el => {
+            const request = {
+              order_id: el.transaction_id,
+              merchant_id: config.payment.merchant_id,
+            };
+            request.signature = createPaymentSignature(request);
+            return { request };
+          });
+
+          return axios.all(
+            requests.map(l => axios.post(config.payment.fondyCheckUrl, l))
+          );
+        })
+
+        .then(
+          axios.spread((...res) => {
+            // all requests are now complete
+            res.forEach(el => {
+              const response = el.data.response;
+              if (response.order_status === 'approved') {
+                knex('transactions')
+                  .update({ paid: true })
+                  .where('transaction_id', response.order_id)
+                  .limit(1)
+                  .then();
+              }
+              console.log(response);
+            });
+
+            const orders = knex.select().from('orders');
+            const transactions = knex
+              .select()
+              .from('transactions')
+              .where('paid', false);
+
+            return Promise.all([orders, transactions]);
+          })
+        );
+    },
+  },
   Mutation: {
     ordersBulkCreate: (p, args, { knex }) => {
       if (args.moduleIds.length === 0) return false;
