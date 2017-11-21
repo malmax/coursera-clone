@@ -5,6 +5,7 @@ import { Route, Switch, Link } from 'react-router-dom';
 import MenuShared from './MenuShared';
 import HomePage from '../containers/HomePage';
 import AdminStudents from '../containers/AdminStudents';
+import AdminInvoices from '../containers/AdminInvoices';
 
 const routes = [
   {
@@ -17,7 +18,7 @@ const routes = [
   {
     path: '/admin/courses/add',
     name: '- отправить инвойсы',
-    component: () => <div>Страница курсов</div>,
+    component: AdminInvoices,
   },
   {
     path: '/admin/courses/payments',

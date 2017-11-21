@@ -12,6 +12,8 @@ import orderSchema from './order/orderSchema';
 import orderResolver from './order/orderResolver';
 import transactionSchema from './transaction/transactionSchema';
 import transactionResolver from './transaction/transactionResolver';
+import fileSchema from './file/fileSchema';
+import fileResolver from './file/fileResolver';
 
 const logger = { log: e => console.log(e) };
 
@@ -30,6 +32,7 @@ const resolvers: any = {
   courseModuleSchema,
   orderSchema,
   transactionSchema,
+  fileSchema,
 ].forEach(sch => {
   const { typeDefs: sTypeDefs, query: sQuery, mutation: sMutation } = sch();
   sTypeDefs.forEach(line => typeDefs.push(line));
@@ -43,6 +46,7 @@ const resolvers: any = {
   courseModuleResolver,
   orderResolver,
   transactionResolver,
+  fileResolver,
 ].forEach(res => {
   const { Query, Mutation, Default } = res();
   Object.assign(resolvers.Query, Query);

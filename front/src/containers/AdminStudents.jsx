@@ -16,7 +16,6 @@ const AdminStudents = props => {
     .groupBy('courseName')
     .value();
 
-  console.log(courses);
   return (
     <Table celled structured>
       <Table.Header>
