@@ -10,7 +10,13 @@ export default () => ({
   Mutation: {
     transactionCreate: (p, args, { knex }) =>
       knex
-        .select('m.name', 'o.amount', 'o.comment', 'o.course_module_id')
+        .select(
+          'm.name',
+          'o.amount',
+          'o.comment',
+          'o.course_module_id',
+          'order_id'
+        )
         .from('orders as o')
         .leftJoin(
           'course_modules as m',
@@ -50,21 +56,32 @@ export default () => ({
             Promise.resolve({
               comment: orderDesc,
               amount,
+              orderIds: result.map(el => el.order_id),
             }),
           ]);
         })
-        .then(([id, rest]) => {
+        .then(([[transactionId], rest]) => {
+          const updatePromises = rest.orderIds.map(el =>
+            knex('orders')
+              .update({
+                updated_at: knex.fn.now(),
+                transaction_id: transactionId,
+              })
+              .where('order_id', el)
+              .limit(1)
+          );
           const request = {
-            order_id: id[0],
-            order_desc: rest.comment, // orderDesc.replace(':,', ':'),
+            order_id: transactionId,
+            order_desc: rest.comment,
             currency: 'USD',
             amount: rest.amount * 100,
             merchant_id: config.payment.merchant_id,
           };
           request.signature = createPaymentSignature(request);
-          return axios.post(config.payment.fondyUrl, { request });
+          const axiosReq = axios.post(config.payment.fondyUrl, { request });
+          return Promise.all([axiosReq, ...updatePromises]);
         })
-        .then(({ data: { response } }) => {
+        .then(([{ data: { response } }]) => {
           if (response.response_status !== 'success') {
             throw new Error(response.error_message);
           }

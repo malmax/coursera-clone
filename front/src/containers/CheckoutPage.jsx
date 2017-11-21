@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { Form, Icon, Table, Grid, Message } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { graphql, compose } from 'react-apollo';
 

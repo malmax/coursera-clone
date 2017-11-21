@@ -4,6 +4,7 @@ import { Label, Menu, Grid } from 'semantic-ui-react';
 import { Route, Switch, Link } from 'react-router-dom';
 import MenuShared from './MenuShared';
 import HomePage from '../containers/HomePage';
+import AdminStudents from '../containers/AdminStudents';
 
 const routes = [
   {
@@ -21,7 +22,7 @@ const routes = [
   {
     path: '/admin/courses/payments',
     name: '- студенты',
-    component: () => <div>Страница курсов</div>,
+    component: AdminStudents,
   },
 ];
 
@@ -44,7 +45,7 @@ const AdminLayout = props => {
                   active={path === route.path}
                 >
                   {route.label ? (
-                    <Label color={path === route.path ? 'teal' : ''}>
+                    <Label color={path === route.path ? 'teal' : 'grey'}>
                       {route.label}
                     </Label>
                   ) : (

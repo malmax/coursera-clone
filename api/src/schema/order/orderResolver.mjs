@@ -1,66 +1,68 @@
 // @flow
-import axios from 'axios';
-import config from '../../config';
+import groupBy from 'lodash/groupBy';
+
 import { checkAuth } from '../../utils/auth';
-import { createPaymentSignature } from '../../utils/payment';
+import { createPaymentSignature, checkPayments } from '../../utils/payment';
 
 export default () => ({
   Default: {},
   Query: {
-    orderGetStudentModules: (p, args, { knex }) => {
-      const del = knex
-        .select()
-        .from('transactions')
-        .where('paid', false)
-        .where('pay_until', '<', knex.raw('date("now")'))
-        .del()
+    orderGetStudentModules: (p, args, { knex }) =>
+      checkPayments()
         .then(() =>
           knex
-            .select()
-            .from('transactions')
-            .where('paid', false)
-            .where('pay_until', '>=', knex.raw('date("now")'))
+            .select([
+              'u.email',
+              'u.name',
+              'c.name as courseName',
+              'm.name as courseModule',
+              'o.paid as oPaid',
+              't.paid as tPaid',
+              't.transaction_id as transactionId',
+              'm.course_module_id as courseModuleId',
+            ])
+            .from('orders as o')
+            .leftJoin('users as u', 'u.user_id', 'o.user_id')
+            .leftJoin(
+              'course_modules as m',
+              'm.course_module_id',
+              'o.course_module_id'
+            )
+            .leftJoin('courses as c', 'c.course_id', 'm.course_id')
+            .leftJoin(
+              'transactions as t',
+              't.transaction_id',
+              'o.transaction_id'
+            )
         )
-        .then(gets => {
-          const requests = gets.map(el => {
-            const request = {
-              order_id: el.transaction_id,
-              merchant_id: config.payment.merchant_id,
-            };
-            request.signature = createPaymentSignature(request);
-            return { request };
-          });
-
-          return axios.all(
-            requests.map(l => axios.post(config.payment.fondyCheckUrl, l))
-          );
-        })
-
-        .then(
-          axios.spread((...res) => {
-            // all requests are now complete
-            res.forEach(el => {
-              const response = el.data.response;
-              if (response.order_status === 'approved') {
-                knex('transactions')
-                  .update({ paid: true })
-                  .where('transaction_id', response.order_id)
-                  .limit(1)
-                  .then();
-              }
-              console.log(response);
+        .then(data => {
+          const out = groupBy(data, 'email');
+          const formated = Object.keys(out).map(email => {
+            const item = out[email];
+            let transactionId = 0;
+            let paid = 0;
+            let name = '';
+            const ordered = item.map(el => {
+              transactionId = el.transactionId;
+              paid = el.tPaid;
+              name = el.name;
+              return {
+                paid: el.oPaid,
+                courseName: el.courseName,
+                courseModule: el.courseModule,
+                courseModuleId: el.courseModuleId,
+              };
             });
-
-            const orders = knex.select().from('orders');
-            const transactions = knex
-              .select()
-              .from('transactions')
-              .where('paid', false);
-
-            return Promise.all([orders, transactions]);
-          })
-        );
-    },
+            return {
+              transactionId,
+              paid,
+              email,
+              name,
+              ordered,
+            };
+          });
+          return formated;
+        }),
   },
   Mutation: {
     ordersBulkCreate: (p, args, { knex }) => {

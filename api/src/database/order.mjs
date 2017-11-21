@@ -17,6 +17,9 @@ export default () =>
 
         table.increments('order_id');
         table
+          .integer('transaction_id')
+          .references('transactions.transaction_id');
+        table
           .integer('course_module_id')
           .notNullable()
           .references('course_modules.course_module_id');
