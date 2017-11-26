@@ -45,7 +45,7 @@ export default () => {
   orderSchema.query = [`orderGetStudentModules: [StudentOrder!]`];
 
   orderSchema.mutation = [
-    `ordersBulkCreate(userId: Int!, moduleIds:[Int!]!): Boolean`,
+    `ordersBulkCreate(userId: Int!, moduleIds:[Int!]!, discount: Int): Boolean`,
   ];
 
   return orderSchema;

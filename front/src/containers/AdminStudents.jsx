@@ -58,17 +58,20 @@ const AdminStudents = props => {
                 const index = _.findIndex(user.ordered, {
                   courseModuleId: el.courseModuleId,
                 });
-                const paid = index !== -1 ? user.ordered[index].paid : false;
+                const paid =
+                  index !== -1 ? user.ordered[index].paid : undefined;
+                let icon = '';
+                if (paid === true)
+                  icon = <Icon color="green" name="checkmark" size="large" />;
+                else if (paid === false)
+                  icon = <Icon color="grey" name="remove" size="large" />;
+
                 return (
                   <Table.Cell
                     textAlign="center"
                     key={`paid-${el.courseModuleId}-user-${user.email}`}
                   >
-                    {paid ? (
-                      <Icon color="green" name="checkmark" size="large" />
-                    ) : (
-                      <Icon color="grey" name="remove" size="large" />
-                    )}
+                    {icon}
                   </Table.Cell>
                 );
               });

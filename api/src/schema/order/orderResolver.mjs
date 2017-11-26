@@ -2,7 +2,7 @@
 import groupBy from 'lodash/groupBy';
 
 import { checkAuth } from '../../utils/auth';
-import { createPaymentSignature, checkPayments } from '../../utils/payment';
+import { checkPayments } from '../../utils/payment';
 
 export default () => ({
   Default: {},
@@ -67,6 +67,9 @@ export default () => ({
   Mutation: {
     ordersBulkCreate: (p, args, { knex }) => {
       if (args.moduleIds.length === 0) return false;
+      let discount = parseInt(args.discount, 10) || 0;
+      if (discount > 100 || discount < 0) discount = 0;
+      discount = 1 - discount / 100;
 
       return knex
         .select()
@@ -79,7 +82,7 @@ export default () => ({
               course_module_id: el.course_module_id,
               user_id: args.userId,
               type: 'card',
-              amount: el.price,
+              amount: el.price * discount,
               paid: false,
             }));
           if (orders.length === 0) return null;
