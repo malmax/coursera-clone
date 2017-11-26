@@ -4,7 +4,13 @@ import camelCase from 'lodash/camelCase';
 import snakeCase from 'lodash/snakeCase';
 import omit from 'lodash/omit';
 
-import { checkAuthOrOwner, hashPassword, checkAuth } from '../../utils/auth';
+import {
+  checkAuthOrOwner,
+  hashPassword,
+  checkAuth,
+  comparePassword,
+  generateTokens,
+} from '../../utils/auth';
 import { normalizeUser, normalizeEmail } from '../../utils/user';
 import { sendEmail } from '../../utils/email';
 
@@ -182,5 +188,19 @@ export default () => ({
             });
         });
     },
+    tryLogin: (p, args, { knex }) =>
+      knex
+        .select()
+        .from('users')
+        .where('email', args.email)
+        .limit(1)
+        .then(([user]) => {
+          if (!user) return null;
+          if (comparePassword(user, args.password)) {
+            const [token, refreshToken] = generateTokens(user);
+            if (token && refreshToken) return { token, refreshToken };
+          }
+          return null;
+        }),
   },
 });

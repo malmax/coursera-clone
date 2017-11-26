@@ -32,6 +32,10 @@ export default () => {
         createdAt: String,
         updatedAt: String,
       }`,
+    `type Token {
+        token: String!
+        refreshToken: String!
+      }`,
   ];
 
   userSchema.query = [`userGet(userId: Int!): User`, `userGetAll: [User]`];
@@ -58,6 +62,7 @@ export default () => {
     MutationAnswer!`,
     `userDelete(userId: Int!): MutationAnswer!`,
     `userChangeRole(userId: Int!, newRole: RoleType!): MutationAnswer!`,
+    `tryLogin(email: String!, password: String!): Token`,
   ];
 
   return userSchema;

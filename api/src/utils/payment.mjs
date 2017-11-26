@@ -28,14 +28,14 @@ export const checkPayments = () =>
   knex
     .select()
     .from('transactions')
-    .where('paid', false)
+    // .where('paid', false)
     .where('pay_until', '<', knex.raw('date("now")'))
     .del()
     .then(() =>
       knex
         .select()
         .from('transactions')
-        .where('paid', false)
+        // .where('paid', false)
         .where('pay_until', '>=', knex.raw('date("now")'))
     )
     .then(gets => {
@@ -47,7 +47,6 @@ export const checkPayments = () =>
         request.signature = createPaymentSignature(request);
         return { request };
       });
-
       return axios.all(
         requests.map(l => axios.post(config.payment.fondyCheckUrl, l))
       );
@@ -57,21 +56,20 @@ export const checkPayments = () =>
         // all requests are now complete
         res.forEach(el => {
           const response = el.data.response;
-          if (response.order_status === 'approved') {
-            knex('transactions')
-              .update({
-                paid: true,
-                updated_at: knex.fn.now(),
-                comment: response.masked_card,
-              })
-              .where('transaction_id', response.order_id)
-              .limit(1)
-              .then(() =>
-                knex('orders')
-                  .update({ paid: true, updated_at: knex.fn.now() })
-                  .where('transaction_id', response.order_id)
-              );
-          }
+          const paid = response.order_status === 'approved';
+          knex('transactions')
+            .update({
+              paid,
+              updated_at: knex.fn.now(),
+              comment: response.masked_card || '',
+            })
+            .where('transaction_id', response.order_id)
+            .limit(1)
+            .then(() =>
+              knex('orders')
+                .update({ paid, updated_at: knex.fn.now() })
+                .where('transaction_id', response.order_id)
+            );
         });
       })
     );

@@ -1,6 +1,7 @@
 // @flow
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+import uuid4 from 'uuid/v4';
 import Knex from 'knex';
 import jwt from 'jsonwebtoken';
 import get from 'lodash/get';
@@ -22,38 +23,12 @@ export const comparePassword = async (
 ): Promise<boolean> => {
   const password = passwordIn.toString().trim();
 
-  if (!user.migrated_password) {
-    if (!user.user_id) return false;
-
-    const md5Password = crypto
-      .createHash('md5')
-      .update(password)
-      .digest('hex');
-
-    if (md5Password !== user.password) return false;
-
-    try {
-      const hashedPassword = await hashPassword(password);
-      await knex('users')
-        .update({
-          migrated_password: true,
-          password: hashedPassword,
-          updated_at: knex.fn.now(),
-        })
-        .where('user_id', user.user_id)
-        .limit(1);
-    } catch (e) {
-      return false;
-    }
-  } else {
-    try {
-      const result = await bcrypt.compare(password, user.password);
-      if (!result) return false;
-    } catch (e) {
-      return false;
-    }
+  try {
+    const result = await bcrypt.compare(password, user.password);
+    if (!result) return false;
+  } catch (e) {
+    return false;
   }
-  return true;
 };
 
 export const generateTokens = async (
@@ -73,7 +48,7 @@ export const generateTokens = async (
     );
 
     const refreshSecret = await knex('users')
-      .update({ refresh_token_secret: knex.raw('DEFAULT') })
+      .update({ refresh_token_secret: uuid4() })
       .returning('refresh_token_secret')
       .where('user_id', user.user_id)
       .limit(1)
