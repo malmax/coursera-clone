@@ -9,7 +9,7 @@ import {
   Segment,
   Header,
 } from 'semantic-ui-react';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 
 const ErrorMessage = props => (
   <Message error header="Ошибка авторизации" content={props.errorMsg} />
@@ -74,10 +74,11 @@ class LoginPage extends React.Component {
 
         return true;
       }
+
       this.setState({
         ...this.state,
         loading: false,
-        error: 'Ошибка авторизации!',
+        error: 'Не правильный логин или пароль!',
       });
     } catch (er) {
       this.setState({
@@ -91,7 +92,20 @@ class LoginPage extends React.Component {
     return false;
   }
 
+  clearStorage = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    this.forceUpdate();
+  };
+
   render() {
+    if (localStorage.getItem('token')) {
+      return (
+        <Button onClick={this.clearStorage} color="red" fluid size="large">
+          Выйти
+        </Button>
+      );
+    }
     const { from } = this.props.location.state || { from: { pathname: '/' } };
     const { redirectToReferrer } = this.state;
 

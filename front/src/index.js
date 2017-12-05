@@ -6,6 +6,8 @@ import { createUploadLink } from 'apollo-upload-client/lib/main';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { setContext } from 'apollo-link-context';
+import { ApolloLink } from 'apollo-link';
 
 import store from './redux/store';
 import registerServiceWorker from './registerServiceWorker';
@@ -13,8 +15,43 @@ import AdminLayout from './routes/AdminLayout';
 import ClientLayout from './routes/ClientLayout';
 import './css/semantic.min.css';
 
+const httpLink = createUploadLink({
+  uri: 'http://localhost:3001/graphql',
+  credentials: 'include',
+});
+
+const middlewareLink = setContext(() => ({
+  headers: {
+    'Access-Control-Request-Headers': 'x-refresh-token,x-token',
+    'Access-Control-Expose-Headers': 'x-refresh-token,x-token',
+    'x-token': localStorage.getItem('token'),
+    'x-refresh-token': localStorage.getItem('refreshToken'),
+  },
+}));
+
+const afterwareLink = new ApolloLink((operation, forward) =>
+  forward(operation).map(response => {
+    const context = operation.getContext();
+    const { response: { headers } } = context;
+
+    if (headers) {
+      const token = headers.get('x-token');
+      const refreshToken = headers.get('x-refresh-token');
+      console.log(token, refreshToken);
+      if (token === 'none' || !refreshToken === 'none') {
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('token');
+      }
+    }
+
+    return response;
+  })
+);
+
+const link = afterwareLink.concat(middlewareLink.concat(httpLink));
+
 const client = new ApolloClient({
-  link: createUploadLink({ uri: 'http://localhost:3001/graphql' }),
+  link,
   cache: new InMemoryCache(),
 });
 

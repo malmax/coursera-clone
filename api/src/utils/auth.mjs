@@ -1,6 +1,6 @@
 // @flow
 import bcrypt from 'bcrypt';
-import crypto from 'crypto';
+// import crypto from 'crypto';
 import uuid4 from 'uuid/v4';
 import Knex from 'knex';
 import jwt from 'jsonwebtoken';
@@ -12,7 +12,8 @@ import type { UserType } from '../database/user';
 
 const knex = Knex(config.db);
 
-export const hashPassword = async (password: string): Promise<string> => {
+export const hashPassword = async (passwordIn: string): Promise<string> => {
+  const password = passwordIn.toString().trim();
   const salt = await bcrypt.genSalt(10);
   return bcrypt.hash(password, salt);
 };
@@ -25,10 +26,12 @@ export const comparePassword = async (
 
   try {
     const result = await bcrypt.compare(password, user.password);
-    if (!result) return false;
+    if (!result) return Promise.resolve(false);
   } catch (e) {
-    return false;
+    return Promise.resolve(false);
   }
+
+  return Promise.resolve(true);
 };
 
 export const generateTokens = async (
@@ -96,71 +99,75 @@ async function regenerateTokens(
 }
 
 export const setAuthCookiesAndHeaders = (
-  tokenIn: string = '',
-  refreshTokenIn: string = '',
-  res: any
+  tokenIn: string = 'none',
+  refreshTokenIn: string = 'none',
+  ctx: any
 ): void => {
   let token = tokenIn;
   let refreshToken = refreshTokenIn;
 
   if (!token || !refreshToken) {
-    token = '';
-    refreshToken = '';
-    res.clearCookie('token');
-    res.clearCookie('refreshToken');
+    token = 'none';
+    refreshToken = 'none';
+    ctx.cookies.set('token', null);
+    ctx.cookies.set('refreshToken', null);
   } else {
-    res.cookie('token', token, {
+    ctx.cookies.set('token', token, {
       maxAge: 1000 * 60 * 60 * 24 * 7,
       httpOnly: true,
     });
-    res.cookie('refreshToken', refreshToken, {
+    ctx.cookies.set('refreshToken', refreshToken, {
       maxAge: 1000 * 60 * 60 * 24 * 7,
       httpOnly: true,
     });
   }
-  res.set({
-    'Access-Control-Request-Headers': 'x-refresh-token,x-token',
-    'x-token': token,
-    'x-refresh-token': refreshToken,
-  });
+
+  ctx.response.set('Access-Control-Expose-Headers', 'x-refresh-token,x-token');
+  ctx.response.set('Access-Control-Request-Headers', 'x-refresh-token,x-token');
+  ctx.response.set('x-token', token);
+  ctx.response.set('x-refresh-token', refreshToken);
 };
 
-export const userMiddleware = async (req, res, next): Promise<void> => {
-  req.user = { userId: 0, role: 'customer' };
+export const userMiddleware = async (ctx, next): Promise<void> => {
+  ctx.request.user = { userId: 0, role: 'client' };
 
-  const token = req.get('x-token');
-  const refreshToken = req.get('x-refresh-token');
+  if (['POST', 'GET'].indexOf(ctx.request.method) !== -1) {
+    const token = ctx.request.get('x-token');
+    const refreshToken = ctx.request.get('x-refresh-token');
 
-  if (
-    token !== req.cookies.token ||
-    refreshToken !== req.cookies.refreshToken
-  ) {
-    setAuthCookiesAndHeaders('', '', res);
-    next();
-    return;
-  }
-
-  try {
-    const decodedToken = jwt.verify(token, config.auth.SECRET);
-    // просрочен Token
-    req.user = { userId: decodedToken.userId, role: decodedToken.role };
-  } catch (e) {
-    const [newToken, newRefreshToken] = await regenerateTokens(
-      token,
-      refreshToken
-    );
-
-    if (newToken && newRefreshToken) {
-      setAuthCookiesAndHeaders(newToken, newRefreshToken, res);
-      req.user = jwt.decode(newToken);
+    if (
+      token !== ctx.cookies.get('token') ||
+      refreshToken !== ctx.cookies.get('refreshToken') ||
+      !token ||
+      !refreshToken
+    ) {
+      console.log('Header token <> Cookie token');
+      setAuthCookiesAndHeaders('', '', ctx);
     } else {
-      setAuthCookiesAndHeaders('', '', res);
+      try {
+        const decodedToken = jwt.verify(token, config.auth.SECRET);
+        // просрочен Token
+        ctx.request.user = {
+          userId: decodedToken.userId,
+          role: decodedToken.role,
+        };
+      } catch (e) {
+        const [newToken, newRefreshToken] = await regenerateTokens(
+          token,
+          refreshToken
+        );
+
+        if (newToken && newRefreshToken) {
+          setAuthCookiesAndHeaders(newToken, newRefreshToken, ctx);
+          ctx.request.user = jwt.decode(newToken);
+        } else {
+          setAuthCookiesAndHeaders('', '', ctx);
+        }
+      }
     }
-    next();
-    return;
   }
 
-  next();
+  await next();
 };
 
 // checkAuth(['admin','manager'])(resolver)

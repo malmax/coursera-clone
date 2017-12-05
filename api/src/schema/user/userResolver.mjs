@@ -3,6 +3,7 @@ import mapKeys from 'lodash/mapKeys';
 import camelCase from 'lodash/camelCase';
 import snakeCase from 'lodash/snakeCase';
 import omit from 'lodash/omit';
+import Bluebird from 'bluebird';
 
 import {
   checkAuthOrOwner,
@@ -10,6 +11,7 @@ import {
   checkAuth,
   comparePassword,
   generateTokens,
+  setAuthCookiesAndHeaders,
 } from '../../utils/auth';
 import { normalizeUser, normalizeEmail } from '../../utils/user';
 import { sendEmail } from '../../utils/email';
@@ -188,19 +190,31 @@ export default () => ({
             });
         });
     },
-    tryLogin: (p, args, { knex }) =>
+    tryLogin: (p, args, { knex, ctx }) =>
       knex
         .select()
         .from('users')
         .where('email', args.email)
         .limit(1)
         .then(([user]) => {
-          if (!user) return null;
-          if (comparePassword(user, args.password)) {
-            const [token, refreshToken] = generateTokens(user);
-            if (token && refreshToken) return { token, refreshToken };
+          if (!user) throw new Error('Не найден пользователь');
+
+          return Bluebird.all([
+            comparePassword(user, args.password),
+            Promise.resolve(user),
+          ]);
+        })
+        .then(([compare, user]) => {
+          if (!compare) throw new Error('Не корректный логин или пароль');
+          return generateTokens(user);
+        })
+        .then(([token, refreshToken]) => {
+          if (token && refreshToken) {
+            setAuthCookiesAndHeaders(token, refreshToken, ctx);
+            return { token, refreshToken };
           }
-          return null;
-        }),
+          return { token: '', refreshToken: '' };
+        })
+        .catch(e => ({ token: '', refreshToken: '' })),
   },
 });

@@ -7,7 +7,7 @@ import { checkPayments } from '../../utils/payment';
 export default () => ({
   Default: {},
   Query: {
-    orderGetStudentModules: (p, args, { knex }) =>
+    orderGetStudentModules: checkAuth()((p, args, { knex }) =>
       checkPayments()
         .then(() =>
           knex
@@ -43,11 +43,11 @@ export default () => ({
             let paid = 0;
             let name = '';
             const ordered = item.map(el => {
-              transactionId = el.transactionId;
-              paid = el.tPaid;
+              if (el.transactionId) transactionId = el.transactionId;
+              paid = el.tPaid || 0;
               name = el.name;
               return {
-                paid: el.oPaid,
+                paid: el.oPaid || 0,
                 courseName: el.courseName,
                 courseModule: el.courseModule,
                 courseModuleId: el.courseModuleId,
@@ -62,7 +62,8 @@ export default () => ({
             };
           });
           return formated;
-        }),
+        })
+    ),
   },
   Mutation: {
     ordersBulkCreate: (p, args, { knex }) => {
