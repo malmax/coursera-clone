@@ -137,7 +137,7 @@ class LoginPage extends React.Component {
                   name="email"
                   value={this.state.email}
                   label="Введите email"
-                  placeholder="name@email.com"
+                  placeholder="admin@mail.ru"
                   onChange={this.handleInput}
                 />
                 <Form.Input
@@ -148,7 +148,7 @@ class LoginPage extends React.Component {
                   value={this.state.password}
                   label="Введите пароль"
                   type="password"
-                  placeholder="пароль"
+                  placeholder="1234"
                   onChange={this.handleInput}
                 />
                 <Button
