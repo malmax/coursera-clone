@@ -7,7 +7,7 @@ import { checkPayments } from '../../utils/payment';
 export default () => ({
   Default: {},
   Query: {
-    orderGetStudentModules: checkAuth()((p, args, { knex }) =>
+    orderGetStudentModules: checkAuth(['admin'])((p, args, { knex }) =>
       checkPayments()
         .then(() =>
           knex

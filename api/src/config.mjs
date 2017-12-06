@@ -28,7 +28,7 @@ export type configType = {
 
 const config: configType = {
   auth: {
-    dev: true,
+    dev: false,
     SECRET: 'dfgfgnkdngkqn4fnkqnlfdnkc ak amlkwPQjo2h&4gqhnrbshn',
   },
   user: {

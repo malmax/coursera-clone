@@ -141,7 +141,7 @@ export const userMiddleware = async (ctx, next): Promise<void> => {
       !token ||
       !refreshToken
     ) {
-      console.log('Header token <> Cookie token');
+      // console.log('Header token <> Cookie token');
       setAuthCookiesAndHeaders('', '', ctx);
     } else {
       try {
@@ -178,16 +178,16 @@ export const checkAuth = (authArray: Array<string> = ['admin']): Function => (
     console.error('WARNING! grant access without check user');
     return resolver(parent, args, context);
   }
-  const user = context.req.user;
+  const user = context.ctx.request.user;
 
+  console.log(user);
   if (user.userId === 0) {
-    return null;
+    throw new Error('Access denied');
   }
 
   if (authArray.length > 0) {
-    if (!authArray.indexOf(user.role)) {
-      return null;
-      // throw new Error('Access denied');
+    if (authArray.indexOf(user.role) === -1) {
+      throw new Error('Access denied');
     }
   }
 
@@ -202,7 +202,7 @@ export const checkAuthOrOwner = (authArray = ['admin']) => (
     return resolver(parent, args, context);
   }
 
-  const user = context.req.user;
+  const user = context.ctx.request.user;
   if (user.userId === 0) {
     return null;
   }
@@ -261,7 +261,7 @@ export const hideFields = (
       return resolver(parent, args, context);
     }
 
-    const user = context.req.user;
+    const user = context.ctx.request.user;
     const result = await resolver(parent, args, context);
 
     if (
